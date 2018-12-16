@@ -1,24 +1,16 @@
 package web_app_design.controller;
 
-import web_app_design.action.ActionContext;
-import web_app_design.action.ActionLogin;
-import web_app_design.action.ActionSignUp;
-import web_app_design.action.ActionTransformFileToXSLT;
+import web_app_design.action.*;
 import web_app_design.enums.*;
 import web_app_design.form.UserForm;
-import web_app_design.model.Article;
-import web_app_design.model.User;
+import web_app_design.model.*;
 import web_app_design.util.*;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @WebServlet(name = "FrontControllerServlet", urlPatterns = {"/login", "/loggedIn", "/super", "/admin", "/basic",
         "/sign-up", "/signed", "/upload", "/uploaded", "/table", "/transform", "/article", "/addAdmin"})
@@ -27,11 +19,13 @@ public class FrontControllerServlet extends HttpServlet {
     private Article article;
     public static List<Article> articleList;
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException,IOException {
         forwardToPage(request, response);
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         forwardToPage(request, response);
     }
 
@@ -162,7 +156,8 @@ public class FrontControllerServlet extends HttpServlet {
 
             return Page.UPLOADED_FILES_PAGE.getPage();
         } else if (StringUtil.isURI(PageURI.TRANSFORM_TO_XSLT.getPageURI(), pageURI)) {
-            String uploadedFile = ParameterUtil.getParameter(Parameter.TRANSFORM_FILE_PARAMETER.getParameter(), request);
+            String uploadedFile = ParameterUtil.getParameter(
+                    Parameter.TRANSFORM_FILE_PARAMETER.getParameter(), request);
 
             ActionContext actionContext = new ActionContext(new ActionTransformFileToXSLT());
             article = (Article) actionContext.executeAction(uploadedFile);

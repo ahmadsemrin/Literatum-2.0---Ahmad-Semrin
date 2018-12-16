@@ -3,8 +3,7 @@ package web_app_design.model.data_access_object.file;
 import web_app_design.model.UploadedFile;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class FileDAO implements IFileDAO {
     private List<UploadedFile> fileList;

@@ -4,8 +4,7 @@ import web_app_design.model.User;
 import web_app_design.util.ErrorHandlerUtil;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class UserDAO implements IUserDAO {
     private List<User> users;
