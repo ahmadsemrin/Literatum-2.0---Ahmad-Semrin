@@ -191,8 +191,6 @@ public class FrontControllerServlet extends HttpServlet {
         return AccessControlUtil.isBasicUser(currentUser);
     }
 
-
-
     private void goToPage(String dispatchURL, HttpServletRequest request, HttpServletResponse response,
                           String pageURI) throws IOException, ServletException {
         if (dispatchURL != null) {
@@ -201,31 +199,9 @@ public class FrontControllerServlet extends HttpServlet {
         } else {
             if (StringUtil.isURI(PageURI.TRANSFORM_TO_XSLT.getPageURI(), pageURI) || StringUtil.isURI(
                     PageURI.ARTICLES_URI.getPageURI(), pageURI)) {
-                findFileAndView(article.getArticleName(), response);
+                FileUtil.findFileAndView(article.getArticleName(), response);
             }
         }
     }
 
-    private void findFileAndView(String fileName, HttpServletResponse response)
-            throws IOException {
-        File articlesFolder = new File(Directory.ARTICLES_PATH.getDirectory());
-        File[] articles = articlesFolder.listFiles();
-
-        for (File file : Objects.requireNonNull(articles)) {
-            if (file.getName().equals(fileName)) {
-                FileReader fileReader = new FileReader(file.getAbsoluteFile());
-                BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-                response.setContentType("text/html");
-                PrintWriter writer = response.getWriter();
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    writer.println(line);
-                }
-
-                bufferedReader.close();
-                fileReader.close();
-            }
-        }
-    }
 }

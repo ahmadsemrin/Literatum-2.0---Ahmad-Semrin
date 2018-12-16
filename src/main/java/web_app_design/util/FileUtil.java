@@ -7,6 +7,7 @@ import web_app_design.enums.Directory;
 import web_app_design.model.UploadedFile;
 import web_app_design.model.data_access_object.file.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
@@ -285,5 +286,28 @@ public final class FileUtil {
         }
 
         return false;
+    }
+
+    public static void findFileAndView(String fileName, HttpServletResponse response)
+            throws IOException {
+        File articlesFolder = new File(Directory.ARTICLES_PATH.getDirectory());
+        File[] articles = articlesFolder.listFiles();
+
+        for (File file : Objects.requireNonNull(articles)) {
+            if (file.getName().equals(fileName)) {
+                FileReader fileReader = new FileReader(file.getAbsoluteFile());
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+
+                response.setContentType("text/html");
+                PrintWriter writer = response.getWriter();
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    writer.println(line);
+                }
+
+                bufferedReader.close();
+                fileReader.close();
+            }
+        }
     }
 }
