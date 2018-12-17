@@ -1,114 +1,10 @@
 <?xml version="1.0"?>
-<!-- ============================================================= -->
-<!--  MODULE:    HTML Preview of NISO JATS Publishing 1.0 XML      -->
-<!--  DATE:      May-June 2012                                     -->
-<!--                                                               -->
-<!-- ============================================================= -->
 
-<!-- ============================================================= -->
-<!--  SYSTEM:    NCBI Archiving and Interchange Journal Articles   -->
-<!--                                                               -->
-<!--  PURPOSE:   Provide an HTML preview of a journal article,     -->
-<!--             in a form suitable for reading.                   -->
-<!--                                                               -->
-<!--  PROCESSOR DEPENDENCIES:                                      -->
-<!--             None: standard XSLT 1.0                           -->
-<!--             Tested using Saxon 6.5, Tranformiix (Firefox),    -->
-<!--               Saxon 9.4.0.3                                   -->
-<!--                                                               -->
-<!--  COMPONENTS REQUIRED:                                         -->
-<!--             1) This stylesheet                                -->
-<!--             2) CSS styles defined in jats-preview.css         -->
-<!--                (to be placed with the results)                -->
-<!--                                                               -->
-<!--  INPUT:     An XML document valid to (any of) the             -->
-<!--             NISO JATS 1.0, NLM/NCBI Journal Publishing 3.0,   -->
-<!--             or NLM/NCBI Journal Publishing 2.3 DTDs.          -->
-<!--             (May also work with older variants,               -->
-<!--             and note further assumptions and limitations      -->
-<!--             below.)                                           -->
-<!--                                                               -->
-<!--  OUTPUT:    HTML (XHTML if a postprocessor is used)           -->
-<!--                                                               -->
-<!--  CREATED FOR:                                                 -->
-<!--             Digital Archive of Journal Articles               -->
-<!--             National Center for Biotechnology Information (NCBI)     -->
-<!--             National Library of Medicine (NLM)                -->
-<!--                                                               -->
-<!--  CREATED BY:                                                  -->
-<!--             Wendell Piez (based on HTML design by             -->
-<!--             Kate Hamilton and Debbie Lapeyre, 2004),          -->
-<!--             Mulberry Technologies, Inc.                       -->
-<!--                                                               -->
-<!-- ============================================================= -->
-
-<!-- ============================================================= -->
-<!--
-  This work is in the public domain and may be reproduced, published or
-  otherwise used without the permission of the National Library of Medicine (NLM).
-
-  We request only that the NLM is cited as the source of the work.
-
-  Although all reasonable efforts have been taken to ensure the accuracy and
-  reliability of the software and data, the NLM and the U.S. Government  do
-  not and cannot warrant the performance or results that may be obtained  by
-  using this software or data. The NLM and the U.S. Government disclaim all
-  warranties, express or implied, including warranties of performance,
-  merchantability or fitness for any particular purpose.
--->
-<!-- ============================================================= -->
-
-<!-- Change history                                                -->
-
-<!-- From jpub3-html.xsl v3.0 to jats-html.xsl v1.0:
-
-Calls to 'normalize-space($node)' where $node is not a string are
-expressed as 'normalize-space(string($node)) in order to provide
-type safety in some XSLT 2.0 processors.
-Support for certain elements in NLM Blue v2.3 is added to provide
-backward compatibility:
-  floats-wrap (same as floats-group)
-  chem-struct-wrapper (same as chem-struct-wrap)
-  custom-meta-wrap (same as custom-meta-group)
-  floats-wrap (same as floats-group)
-  gloss-group (same as glossary)
-  citation
-  contract-num
-  contract-sponsor
-  grant-num
-  grant-sponsor
-Support is added for looser structures for title-group elements
-in 2.3 (title, trans-title, trans-subtitle etc.) Same for 2.3
-tagging of permissions info (copyright-statement, copyright-year,
-license) and funding/contract info (contract-num, contract-sponsor,
-grant-num, grant-sponsor).
-Elements newly permitted in JATS journal-meta
-(contrib-group, aff, aff-alternatives) are supported.
-New elements in NISO JATS v1.0 are supported:
-  aff-alternatives
-  citation-alternatives
-  collab-alternatives
-  trans-title-group (with @xml:lang)
-  contrib-id
-  count>
-  issn-l
-  nested-kwd
-Added support for @pub-id-type='arXiv'
-Named anchor logic extended to support "alternatives" wrappers
-for aff, contrib, citation etc.
-Footer text is emended, with name of transformation (stylesheet
-or pipeline) parameterized.
--->
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xlink="http://www.w3.org/1999/xlink"
                 xmlns:mml="http://www.w3.org/1998/Math/MathML"
                 exclude-result-prefixes="xlink mml">
-
-
-    <!--<xsl:output method="xml" indent="no" encoding="UTF-8"
-      doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
-      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>-->
 
 
     <xsl:output doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -117,7 +13,6 @@ or pipeline) parameterized.
 
     <xsl:strip-space elements="*"/>
 
-    <!-- Space is preserved in all elements allowing #PCDATA -->
     <xsl:preserve-space
             elements="abbrev abbrev-journal-title access-date addr-line
               aff alt-text alt-title article-id article-title
@@ -313,63 +208,6 @@ or pipeline) parameterized.
 
                 <!-- Cell 2: Article information -->
                 <xsl:for-each select="article-meta | self::front-stub">
-                    <!-- content model:
-                              (article-id*, article-categories?, title-group,
-                               (contrib-group | aff)*,
-                       author-notes?, pub-date+, volume?, volume-id*,
-                       volume-series?, issue?, issue-id*, issue-title*,
-                       issue-sponsor*, issue-part?, isbn*, supplement?,
-                       ((fpage, lpage?, page-range?) | elocation-id)?,
-                       (email | ext-link | uri | product |
-                        supplementary-material)*,
-                       history?, permissions?, self-uri*, related-article*,
-                       abstract*, trans-abstract*,
-                       kwd-group*, funding-group*, conference*, counts?,
-                       custom-meta-group?)
-
-                      These are handled as follows:
-                      In the "Article Information" header cell:
-                        article-id
-                        pub-date
-                        volume
-                        volume-id
-                        volume-series
-                        issue
-                        issue-id
-                        issue-title
-                        issue-sponsor
-                        issue-part
-                        isbn
-                        supplement
-                        fpage
-                        lpage
-                        page-range
-                        elocation-id
-                        email
-                        ext-link
-                        uri
-                        product
-                        history
-                        permissions
-                        self-uri
-                        related-article
-                        funding-group
-                        conference
-                      In the "Article title" cell:
-                        title-group
-                        contrib-group
-                        aff
-                        author-notes
-                        abstract
-                        trans-abstract
-                      In the metadata footer
-                        article-categories
-                        supplementary-material
-                        kwd-group
-                        counts
-                        custom-meta-group
-                            -->
-
                     <div class="cell">
                         <h4 class="generated">
                             <xsl:text>Article Information</xsl:text>
@@ -553,15 +391,6 @@ or pipeline) parameterized.
     <!--  METADATA PROCESSING                                          -->
     <!-- ============================================================= -->
 
-    <!--  Includes mode "metadata" for front matter, along with
-          "metadata-inline" for metadata elements collapsed into
-          inline sequences, plus associated named templates            -->
-
-    <!-- WAS journal-meta content:
-         journal-id+, journal-title-group*, issn+, isbn*, publisher?,
-         notes? -->
-    <!-- (journal-id+, journal-title-group*, (contrib-group | aff | aff-alternatives)*,
-         issn+, issn-l?, isbn*, publisher?, notes*, self-uri*) -->
     <xsl:template match="journal-id" mode="metadata">
         <xsl:call-template name="metadata-labeled-entry">
             <xsl:with-param name="label">
@@ -577,11 +406,9 @@ or pipeline) parameterized.
         </xsl:call-template>
     </xsl:template>
 
-
     <xsl:template match="journal-title-group" mode="metadata">
         <xsl:apply-templates mode="metadata"/>
     </xsl:template>
-
 
     <xsl:template match="issn" mode="metadata">
         <xsl:call-template name="metadata-labeled-entry">
@@ -592,7 +419,6 @@ or pipeline) parameterized.
         </xsl:call-template>
     </xsl:template>
 
-
     <xsl:template match="issn-l" mode="metadata">
         <xsl:call-template name="metadata-labeled-entry">
             <xsl:with-param name="label">
@@ -602,7 +428,6 @@ or pipeline) parameterized.
         </xsl:call-template>
     </xsl:template>
 
-
     <xsl:template match="isbn" mode="metadata">
         <xsl:call-template name="metadata-labeled-entry">
             <xsl:with-param name="label">
@@ -610,7 +435,6 @@ or pipeline) parameterized.
             </xsl:with-param>
         </xsl:call-template>
     </xsl:template>
-
 
     <xsl:template match="publisher" mode="metadata">
         <xsl:call-template name="metadata-labeled-entry">
@@ -622,11 +446,9 @@ or pipeline) parameterized.
         </xsl:call-template>
     </xsl:template>
 
-
     <xsl:template match="publisher-name" mode="metadata-inline">
         <xsl:apply-templates/>
     </xsl:template>
-
 
     <xsl:template match="publisher-loc" mode="metadata-inline">
         <span class="generated"> (</span>
@@ -634,17 +456,11 @@ or pipeline) parameterized.
         <span class="generated">)</span>
     </xsl:template>
 
-
     <xsl:template match="notes" mode="metadata">
         <xsl:call-template name="metadata-area">
             <xsl:with-param name="label">Notes</xsl:with-param>
         </xsl:call-template>
     </xsl:template>
-
-
-    <!-- journal-title-group content:
-         (journal-title*, journal-subtitle*, trans-title-group*,
-         abbrev-journal-title*) -->
 
     <xsl:template match="journal-title" mode="metadata">
         <xsl:call-template name="metadata-labeled-entry">
